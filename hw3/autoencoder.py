@@ -122,7 +122,7 @@ class VAE(nn.Module):
 
 def vae_loss(x, xr, z_mu, z_log_sigma2, x_sigma2):
     """
-    Pointwise loss function of a VAE with latent space of dimension z_dim.
+    Point-wise loss function of a VAE with latent space of dimension z_dim.
     :param x: Input image batch of shape (N,C,H,W).
     :param xr: Reconstructed (output) image batch.
     :param z_mu: Posterior mean (batch) of shape (N, z_dim).
@@ -136,7 +136,9 @@ def vae_loss(x, xr, z_mu, z_log_sigma2, x_sigma2):
     """
     loss, data_loss, kldiv_loss = None, None, None
     # TODO: Implement the VAE pointwise loss calculation.
-    # Remember that the covariance matrix of the posterior is diagonal.
+    # Remember:
+    # 1. The covariance matrix of the posterior is diagonal.
+    # 2. You need to average over the batch dimension.
     # ====== YOUR CODE: ======
     raise NotImplementedError()
     # ========================

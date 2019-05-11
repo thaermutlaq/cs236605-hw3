@@ -63,8 +63,9 @@ class Generator(nn.Module):
         """
         Samples from the Generator.
         :param n: Number of instance-space samples to generate.
-        :param with_grad: Whether the returned samples should have
-        gradients or not.
+        :param with_grad: Whether the returned samples should track
+        gradients or not. I.e., whether they should be part of the generator's
+        computation graph or standalone tensors.
         :return: A batch of samples, shape (N,C,H,W).
         """
         device = next(self.parameters()).device
@@ -161,4 +162,3 @@ def train_batch(dsc_model: Discriminator, gen_model: Generator,
     # ========================
 
     return dsc_loss.item(), gen_loss.item()
-
