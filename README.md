@@ -12,8 +12,8 @@ A variational autoencoder and a generative adversarial network.
 
 ## General Guidelines
 
-- Please read the [getting started page](https://vistalab-technion.github.io/cs236605/assignments/getting-started/) on the course website. It explains how to **setup, run and submit** the assignment.
-- This assignment requires running on GPU-enabled hardware. Please read the [course servers usage guide](https://vistalab-technion.github.io/cs236605/assignments/hpc-servers/). It explains how to use and run your code on the course servers to benefit from training with GPUs.
+- Please read the [getting started page](https://vistalab-technion.github.io/cs236605/assignments/getting-started) on the course website. It explains how to **setup, run and submit** the assignment.
+- This assignment requires running on GPU-enabled hardware. Please read the [course servers usage guide](https://vistalab-technion.github.io/cs236605/assignments/hpc-servers). It explains how to use and run your code on the course servers to benefit from training with GPUs.
 - The text and code cells in these notebooks are intended to guide you through the
   assignment and help you verify your solutions.
   The notebooks **do not need to be edited** at all (unless you wish to play around).
