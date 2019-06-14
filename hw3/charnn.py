@@ -22,7 +22,10 @@ def char_maps(text: str):
     # It's best if you also sort the chars before assigning indices, so that
     # they're in lexical order.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    chars_set = set(text)
+    sorted_chars = sorted(chars_set)
+    idx_to_char = { i : sorted_chars[i] for i in range(0, len(sorted_chars)) }
+    char_to_idx = {v: k for k, v in idx_to_char.items()}
     # ========================
     return char_to_idx, idx_to_char
 
@@ -38,7 +41,9 @@ def remove_chars(text: str, chars_to_remove):
     """
     # TODO: Implement according to the docstring.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    dd = {ord(c) : None for c in chars_to_remove}
+    text_clean = text.translate(dd)
+    n_removed = len(text) - len(text_clean)
     # ========================
     return text_clean, n_removed
 
@@ -58,7 +63,9 @@ def chars_to_onehot(text: str, char_to_idx: dict) -> Tensor:
     """
     # TODO: Implement the embedding.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    indices = torch.LongTensor([char_to_idx[char] for char in text]).view(-1, 1)
+    result = torch.zeros(len(text), len(char_to_idx), dtype = torch.int8)
+    result = result.scatter_(1, indices, 1)
     # ========================
     return result
 
@@ -75,7 +82,8 @@ def onehot_to_chars(embedded_text: Tensor, idx_to_char: dict) -> str:
     """
     # TODO: Implement the reverse-embedding.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    indices = embedded_text.argmax(dim=1)
+    result = ''.join([idx_to_char[idx.item()] for idx in indices])
     # ========================
     return result
 
@@ -104,7 +112,9 @@ def chars_to_labelled_samples(text: str, char_to_idx: dict, seq_len: int,
     # 3. Create the labels tensor in a similar way and convert to indices.
     # Note that no explicit loops are required to implement this function.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    embedded_text = chars_to_onehot(text, char_to_idx).to(device)
+    samples = torch.stack(embedded_text[0:-1, :].split(seq_len)[0:-1])
+    labels = torch.stack(embedded_text[1:,:].split(seq_len)[0:-1]).argmax(dim=2)
     # ========================
     return samples, labels
 
@@ -120,7 +130,8 @@ def hot_softmax(y, dim=0, temperature=1.0):
     """
     # TODO: Implement based on the above.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    scaled_input = y * (1/temperature)
+    result = torch.softmax(scaled_input, dim=dim)
     # ========================
     return result
 
@@ -156,7 +167,20 @@ def generate_from_model(model, start_sequence, n_chars, char_maps, T):
     # necessary for this. Best to disable tracking for speed.
     # See torch.no_grad().
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    with torch.no_grad():
+        h = None
+        embedded_start_sequence = chars_to_onehot(start_sequence, char_to_idx).unsqueeze(dim=0).to(dtype=torch.float)
+        embedded, h = model(embedded_start_sequence, h)
+        embedded = embedded[:, len(start_sequence) -1, :]
+        for i in range(n_chars - len(start_sequence)):
+            prob = hot_softmax(embedded.squeeze(), temperature=T)
+            generated_char_idx = torch.multinomial(input=prob, num_samples=1)
+            generated_char = idx_to_char[generated_char_idx.item()]
+            out_text += generated_char
+            embedded_generated_char = chars_to_onehot(generated_char, char_to_idx).unsqueeze(dim=0).to(dtype=torch.float)
+            embedded, h = model(embedded_generated_char, h)
+
+
     # ========================
 
     return out_text
@@ -200,7 +224,26 @@ class MultilayerGRU(nn.Module):
         #     then call self.register_parameter() on them. Also make
         #     sure to initialize them. See functions in torch.nn.init.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        for i in range(self.n_layers):
+            input_size = in_dim if i == 0 else h_dim
+            layer = {}
+            layer['xz'] = nn.Linear(input_size, h_dim, bias=False)
+            layer['hz'] = nn.Linear(h_dim, h_dim, bias=True)
+
+            layer['xr'] = nn.Linear(input_size, h_dim, bias=False)
+            layer['hr'] = nn.Linear(h_dim, h_dim, bias=True)
+
+            layer['xg'] = nn.Linear(input_size, h_dim, bias=False)
+            layer['hg'] = nn.Linear(h_dim, h_dim, bias=True)
+
+            for key, value in layer.items():                
+                self.add_module("layer {} {}".format(i, key), value)
+
+            layer['dropout'] = nn.Dropout(dropout)
+            self.layer_params.append(layer)
+
+        self.output_layer = nn.Linear(h_dim, out_dim, bias=True)
+
         # ========================
 
     def forward(self, input: Tensor, hidden_state: Tensor=None):
@@ -235,6 +278,23 @@ class MultilayerGRU(nn.Module):
         # Tip: You can use torch.stack() to combine multiple tensors into a
         # single tensor in a differentiable manner.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        layer_input = layer_input.permute(1 ,0, 2)
+        prev_layer_output = layer_input
+        for i in range(self.n_layers):
+            layer = self.layer_params[i]
+            hiden_states = []
+            hts = []
+            ht = None
+            for xt in prev_layer_output:
+                zt = torch.sigmoid(layer['xz'](xt) + layer['hz'](layer_states[i]))
+                rt = torch.sigmoid(layer['xr'](xt) + layer['hr'](layer_states[i]))
+                gt = torch.tanh(layer['xg'](xt) + layer['hg'](rt * layer_states[i]))
+                layer_states[i] = zt * layer_states[i] + (1 - zt) * gt
+                hts.append(layer_states[i])
+            prev_layer_output = torch.stack(hts)
+            prev_layer_output = layer['dropout'](prev_layer_output)
+        layer_output = self.output_layer(prev_layer_output)
+        layer_output = layer_output.permute(1 ,0 ,2)
+        hidden_state = torch.stack(layer_states).permute(1 ,0 ,2)
         # ========================
         return layer_output, hidden_state
