@@ -10,11 +10,12 @@ math (delimited with $$).
 
 
 def part1_generation_params():
-    start_seq = "ACT"
-    temperature = .1
+    start_seq = ""
+    temperature = .0001
     # TODO: Tweak the parameters to generate a literary masterpiece.
     # ====== YOUR CODE: ======
-    # raise NotImplementedError()
+    start_seq = "ACT"
+    temperature = .2
     # ========================
     return start_seq, temperature
 
@@ -87,7 +88,12 @@ def part2_vae_hyperparams():
     )
     # TODO: Tweak the hyperparameters to generate a former president.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    hypers['batch_size'] = 128
+    hypers['h_dim'] = 1024
+    hypers['z_dim'] = 100
+    hypers['learn_rate'] = 0.0002
+    hypers['x_sigma2'] = 0.9
+    hypers['betas'] = (0.9, 0.999)
     # ========================
     return hypers
 

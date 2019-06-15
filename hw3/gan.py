@@ -1,3 +1,4 @@
+
 from typing import Callable
 
 import torch
@@ -22,7 +23,8 @@ class Discriminator(nn.Module):
         # You can then use either an affine layer or another conv layer to
         # flatten the features.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        self.encoder = EncoderCNN(in_size, 1024)
+        self.flatten = nn.Conv2d(1024, 1, 4, 1, 0, bias=False),
         # ========================
 
     def forward(self, x):
@@ -35,7 +37,8 @@ class Discriminator(nn.Module):
         # No need to apply sigmoid to obtain probability - we'll combine it
         # with the loss due to improved numerical stability.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        y = self.encoder(x)
+        y = self.flatten(y)
         # ========================
         return y
 
