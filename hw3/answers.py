@@ -10,11 +10,11 @@ math (delimited with $$).
 
 
 def part1_generation_params():
-    start_seq = ""
-    temperature = .0001
+    start_seq = "ACT"
+    temperature = .1
     # TODO: Tweak the parameters to generate a literary masterpiece.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    # raise NotImplementedError()
     # ========================
     return start_seq, temperature
 

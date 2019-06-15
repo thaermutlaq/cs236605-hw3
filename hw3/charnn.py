@@ -169,7 +169,7 @@ def generate_from_model(model, start_sequence, n_chars, char_maps, T):
     # ====== YOUR CODE: ======
     with torch.no_grad():
         h = None
-        embedded_start_sequence = chars_to_onehot(start_sequence, char_to_idx).unsqueeze(dim=0).to(dtype=torch.float)
+        embedded_start_sequence = chars_to_onehot(start_sequence, char_to_idx).unsqueeze(dim=0).to(dtype=torch.float).to(device)
         embedded, h = model(embedded_start_sequence, h)
         embedded = embedded[:, len(start_sequence) -1, :]
         for i in range(n_chars - len(start_sequence)):
@@ -177,7 +177,7 @@ def generate_from_model(model, start_sequence, n_chars, char_maps, T):
             generated_char_idx = torch.multinomial(input=prob, num_samples=1)
             generated_char = idx_to_char[generated_char_idx.item()]
             out_text += generated_char
-            embedded_generated_char = chars_to_onehot(generated_char, char_to_idx).unsqueeze(dim=0).to(dtype=torch.float)
+            embedded_generated_char = chars_to_onehot(generated_char, char_to_idx).unsqueeze(dim=0).to(dtype=torch.float).to(device)
             embedded, h = model(embedded_generated_char, h)
 
 
@@ -272,7 +272,6 @@ class MultilayerGRU(nn.Module):
 
         layer_input = input
         layer_output = None
-
         # TODO: Implement the model's forward pass.
         # You'll need to go layer-by-layer from bottom to top (see diagram).
         # Tip: You can use torch.stack() to combine multiple tensors into a

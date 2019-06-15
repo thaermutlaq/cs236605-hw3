@@ -73,7 +73,7 @@ class Trainer(abc.ABC):
                 self.model.load_state_dict(saved_state['model_state'])
 
         for epoch in range(num_epochs):
-            save_checkpoint = False
+            save_checkpoint = True
             verbose = False  # pass this to train/test_epoch.
             if epoch % print_every == 0 or epoch == num_epochs - 1:
                 verbose = True
@@ -115,7 +115,7 @@ class Trainer(abc.ABC):
                       f'at epoch {epoch+1}')
 
             if post_epoch_fn:
-                post_epoch_fn(epoch, train_result, test_result, verbose)
+                post_epoch_fn(epoch, train_res, test_res, verbose)
 
         return FitResult(actual_num_epochs,
                          train_loss, train_acc, test_loss, test_acc)
@@ -287,7 +287,7 @@ class RNNTrainer(Trainer):
             embedded_out, h = self.model(x, self.hs)
             self.hs = h.detach()
             # Compute loss
-            loss = self.loss_fn(embedded_out.view(embedded_out.shape[0] * embedded_out.shape[1], embedded_out.shape[2]), y.view(y.shape[0] * y.shape[1]))
+            loss = self.loss_fn(embedded_out.contiguous().view(embedded_out.shape[0] * embedded_out.shape[1], embedded_out.shape[2]), y.view(y.shape[0] * y.shape[1]))
 
             y_pred = torch.argmax(embedded_out, dim=2).to(self.device)
             
