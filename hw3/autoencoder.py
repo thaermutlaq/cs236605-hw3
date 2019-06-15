@@ -135,7 +135,7 @@ class VAE(nn.Module):
 
         std = log_sigma2.mul(0.5).exp_()
         # return torch.normal(mu, std)
-        esp = torch.randn(*mu.size())
+        esp = torch.randn(*mu.size()).to(x.device)
         z = mu + std * esp
 
         # ========================
@@ -165,7 +165,7 @@ class VAE(nn.Module):
             # ====== YOUR CODE: ======
             for i in range(n):
                 z = torch.randn(1, self.z_dim).to(device)
-                sample = self.decode(z).squeeze()
+                sample = self.decode(z).squeeze().cpu()
                 samples.append(sample)
 
             # ========================
