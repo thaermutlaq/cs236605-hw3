@@ -1,0 +1,6 @@
+cpu-bind=MASK - rishon3, task  0  0 [45847]: mask 0x200000002 set
+cpu-bind=MASK - rishon3, task  0  0 [45847]: mask 0x200000002 set
+*** SLURM BATCH JOB 'test_job' STARTING ***
+*** Activating environment cs236605-hw ***
+python: can't open file 'python': [Errno 2] No such file or directory
+*** SLURM BATCH JOB 'test_job' DONE ***
