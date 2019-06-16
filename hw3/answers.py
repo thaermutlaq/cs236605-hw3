@@ -28,16 +28,12 @@ In addition, long sequences may result in the problem of very long training time
 """
 
 part1_q2 = r"""
-**Your answer:**
+Basically the memory depends on the hidden state and not the sequence len.
+Moreover, the hidden states are passed between one batch to another thus may "remember" more than a single sequence length.
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+In addition, the sequence length during training doesn't limit the sequence length the module can generate because the memory of the module
+is saved between sequences wich mean the module memory doesn't contain sequences only but learns the order of sequences and how they
+are fed to the module, which cause the modue to be able to generate large text.
 """
 
 part1_q3 = r"""
@@ -164,42 +160,31 @@ def part3_gan_hyperparams():
 
 
 part3_q1 = r"""
-**Your answer:**
+The gradients are maintained during generator update (feeding and backpropogation), and discarded during discriminator update hen sampling
+fake data with the generator.
 
+There is no need to calculate gradients for the generator when we are updating the discriminator. In this case we use
+the generator to sample fake data to train the discriminator and not to train the generator, therefore we should not accumulate gradients
+for this operation.
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+In the other hand, when we update the generator, we use the generator sample to forward and backpropogate to update the generator paremeters,
+therefore, in this case maintaining the gradients is mandatory to train the generator.
 """
 
 part3_q2 = r"""
-**Your answer:**
+1. No since the discriminator can be fooled by the generator while the generator generate good fakes. This that the generator is good doesn't
+say the discriminator is also good to distinguish between fake and real data.
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+2. This that the generator loss decrease mean that the generator is performing better, generating better and better fakes. If in this case 
+the discriminator loss stay const, this mean that the disriminator is really good trained (in case loss is small), even when feeding it
+with better and better "fakes", it still able to distinguish with same accuracy. 
 
 """
 
 part3_q3 = r"""
-**Your answer:**
+In my implimintation images from VAE looks better compared to images from GAN. Images from GAN looks more noisy and not smooth.
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+I expected the GAN give better results, therefore this can be architecture issue.
 """
 
 # ==============

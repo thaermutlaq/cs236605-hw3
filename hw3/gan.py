@@ -97,7 +97,6 @@ class Generator(nn.Module):
             nn.ReLU(True),
             # state size. (ngf) x 32 x 32
             nn.ConvTranspose2d(ngf, out_channels, 4, 2, 1, bias=False),
-            nn.Tanh()
         )
         # ========================
 
