@@ -115,7 +115,7 @@ class Generator(nn.Module):
         # Generate n latent space samples and return their reconstructions.
         # Don't use a loop.
         # ====== YOUR CODE: ======
-        zs = torch.randn(n, self.z_dim, requires_grad=with_grad).to(device)
+        zs = torch.randn(n, self.z_dim).to(device)
         samples = self.forward(zs)
 
         if not with_grad:
@@ -208,7 +208,7 @@ def train_batch(dsc_model: Discriminator, gen_model: Generator,
     dsc_optimizer.zero_grad()
     generated_data = gen_model.sample(x_data.shape[0], with_grad=False)
     y_data = dsc_model(x_data)
-    y_generated = dsc_model(x_data)
+    y_generated = dsc_model(generated_data)
 
     dsc_loss = dsc_loss_fn(y_data, y_generated)
     dsc_loss.backward()
@@ -221,9 +221,9 @@ def train_batch(dsc_model: Discriminator, gen_model: Generator,
     # 3. Update generator parameters
     # ====== YOUR CODE: ======
     gen_optimizer.zero_grad()
-    generated_data = gen_model.sample(x_data.shape[0], with_grad=True)
-    y_generated = dsc_model(generated_data)
-    gen_loss = gen_loss_fn(y_generated)
+    generated_data_2 = gen_model.sample(x_data.shape[0], with_grad=True)
+    y_generated_2 = dsc_model(generated_data_2)
+    gen_loss = gen_loss_fn(y_generated_2)
     gen_loss.backward()
     gen_optimizer.step()
     # ========================
